@@ -1,7 +1,6 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
-import LiveState, { connectElement } from 'phx-live-state'
-import litLogo from './assets/lit.svg'
+import LiveState, { liveState } from 'phx-live-state'
 
 type ChatMessage = {
   from: string;
@@ -15,6 +14,13 @@ type ChatMessage = {
  * @csspart button - The button
  */
 @customElement('discord-chat')
+@liveState({
+  channelName: 'discord_chat:new',
+  properties: ['messages'],
+  events: {
+    send: ['new_message', 'start_chat']
+  }
+})
 export class DiscordChatElement extends LitElement {
   /**
    * Copy for the read the docs hint.
@@ -32,17 +38,6 @@ export class DiscordChatElement extends LitElement {
   name: string | undefined;
 
   liveState: LiveState | undefined;
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.liveState = new LiveState(this.url, 'discord_chat:new');
-    connectElement(this.liveState, this, {
-      properties: ['messages'],
-      events: {
-        send: ['new_message', 'start_chat']
-      }
-    });
-  }
 
   @query('input[name="name"]')
   nameInput: HTMLInputElement | undefined;
